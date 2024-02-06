@@ -42,6 +42,7 @@
   },
   "peerDependencies": {
     "@nestjs/common": "^10.3",
-    "@nestjs/testing": "^10.3"
+    "@nestjs/testing": "^10.3",
+    "prisma-fixtures-cli": "^2.0"
   }
 }
