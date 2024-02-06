@@ -1,9 +1,8 @@
 import {Test, TestingModule} from "@nestjs/testing";
-import {DynamicModule, INestApplication, ModuleMetadata} from "@nestjs/common";
+import {DynamicModule, INestApplication, ModuleMetadata, Type} from "@nestjs/common";
 import {ModuleOverrider} from "./interfaces/module-overrider";
 
-
-function isModuleMetadata(conf: ModuleMetadata | DynamicModule): conf is ModuleMetadata {
+function isModuleMetadata(conf: ModuleMetadata | Type<any>): conf is ModuleMetadata {
     return (conf as ModuleMetadata).exports !== undefined;
 }
 
@@ -16,17 +15,17 @@ export async function createTestingModule(moduleMetadata: ModuleMetadata, overri
 
 /**
  * Create the testing module importing
- * @param dynamicModule The module to import
+ * @param module The module to import
  * @param overriders An array of module overriders
  */
-export async function createTestingModule(dynamicModule: DynamicModule, overriders?: Array<ModuleOverrider>): Promise<TestingModule>;
+export async function createTestingModule(module: Type<any>, overriders?: Array<ModuleOverrider>): Promise<TestingModule>;
 
 /**
  * Create the testing module using a module or with a costume module metadata
  * @param conf
  * @param overriders
  */
-export function createTestingModule(conf: ModuleMetadata | DynamicModule, overriders?: Array<ModuleOverrider>): Promise<TestingModule> {
+export function createTestingModule(conf: ModuleMetadata | Type<any>, overriders?: Array<ModuleOverrider>): Promise<TestingModule> {
     let moduleMetadata: ModuleMetadata = {
         imports: [conf as DynamicModule],
     };
@@ -44,6 +43,10 @@ export function createTestingModule(conf: ModuleMetadata | DynamicModule, overri
     return moduleRef.compile();
 }
 
+/**
+ * Create the Nest application and initialize it
+ * @param testingModule
+ */
 export async function createApplication(testingModule: TestingModule): Promise<INestApplication> {
     const app = testingModule.createNestApplication();
     await app.init();
