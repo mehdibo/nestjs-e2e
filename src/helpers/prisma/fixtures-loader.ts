@@ -1,4 +1,3 @@
-import {TestingModule} from "@nestjs/testing";
 import { PrismaClient } from '@prisma/client'
 import {Builder, fixturesIterator, Loader, Parser, Resolver} from "@getbigger-io/prisma-fixtures-cli";
 
