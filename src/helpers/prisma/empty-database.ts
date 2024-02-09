@@ -1,4 +1,5 @@
-import type { Prisma, PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 export type DatabaseType = 'postgresql' | 'mysql';
 
@@ -13,7 +14,7 @@ export async function emptyDatabase(prismaClient: PrismaClient, database: Databa
   }
 
   for (const key in Prisma.ModelName) {
-    const tableName = Prisma.ModelName[key];
+    const tableName = Prisma.ModelName[key as keyof typeof Prisma.ModelName];
 
     await prismaClient.$queryRawUnsafe(
       sql.replace('$TABLE_NAME', tableName),
