@@ -7,6 +7,9 @@ describe('PrismaHelper', () => {
     beforeEach(() => {
         prismaClient = {
             $queryRawUnsafe: undefined,
+            dummy: {
+                create: undefined,
+            },
         } as unknown as PrismaClient;
     });
 
@@ -65,4 +68,23 @@ describe('PrismaHelper', () => {
             })
         });
     })
+
+    describe("loadFixtures", () => {
+        let prismaHelper: PrismaHelper;
+
+        beforeEach(() => {
+            prismaHelper = new PrismaHelper(prismaClient, 'postgresql');
+        });
+
+        it('should build fixtures', async () => {
+            prismaClient.dummy.create =  jest.fn();
+            await prismaHelper.loadFixtures('./test/fixtures');
+            expect(prismaClient.dummy.create).toHaveBeenCalledTimes(1)
+            expect(prismaClient.dummy.create).toHaveBeenCalledWith({
+                data: {
+                    id: 1
+                }
+            })
+        });
+    });
 });

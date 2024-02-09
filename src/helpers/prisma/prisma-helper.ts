@@ -1,5 +1,6 @@
 import type {PrismaClient} from '@prisma/client';
 import {Prisma} from '@prisma/client';
+import {Builder, fixturesIterator, Loader, Parser, Resolver} from "@getbigger-io/prisma-fixtures-cli";
 
 type DatabaseType = 'postgresql' | 'mysql';
 type TableName = Prisma.ModelName;
@@ -36,6 +37,22 @@ export class PrismaHelper {
             await this.prismaClient.$queryRawUnsafe(
                 sql.replace('$TABLE_NAME', tableName),
             );
+        }
+    }
+
+    /**
+     * Load fixtures using {@link https://github.com/getbigger-io/prisma-fixtures @getbigger-io/prisma-fixtures-cli}
+     * @param fixturesPath Path to the directory containing the fixture files
+     */
+    async loadFixtures(fixturesPath: string): Promise<void> {
+        const loader = new Loader();
+        const resolver = new Resolver();
+        loader.load(fixturesPath);
+
+        const fixtures = resolver.resolve(loader.fixtureConfigs);
+        const builder = new Builder(this.prismaClient, new Parser())
+        for (const fixture of fixturesIterator(fixtures)) {
+            await builder.build(fixture);
         }
     }
 }
