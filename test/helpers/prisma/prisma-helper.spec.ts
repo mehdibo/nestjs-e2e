@@ -13,11 +13,11 @@ describe('PrismaHelper', () => {
     describe("emptyDatabase", () => {
         let prismaHelper: PrismaHelper;
 
-        beforeEach(() => {
-            prismaHelper = new PrismaHelper(prismaClient, 'postgresql');
-        });
-
         describe('postgresql', () => {
+
+            beforeEach(() => {
+                prismaHelper = new PrismaHelper(prismaClient, 'postgresql');
+            });
 
             it('should delete all available tables if none are passed', async () => {
                 prismaClient.$queryRawUnsafe = jest.fn();
@@ -36,6 +36,32 @@ describe('PrismaHelper', () => {
 
                 expect(prismaClient.$queryRawUnsafe).toHaveBeenCalledTimes(1);
                 expect(prismaClient.$queryRawUnsafe).toHaveBeenNthCalledWith(1, 'TRUNCATE "Test" RESTART IDENTITY CASCADE');
+            })
+        });
+
+        describe('mysql', () => {
+
+            beforeEach(() => {
+                prismaHelper = new PrismaHelper(prismaClient, 'mysql');
+            });
+
+            it('should delete all available tables if none are passed', async () => {
+                prismaClient.$queryRawUnsafe = jest.fn();
+
+                await prismaHelper.emptyDatabase();
+
+                expect(prismaClient.$queryRawUnsafe).toHaveBeenCalledTimes(2);
+                expect(prismaClient.$queryRawUnsafe).toHaveBeenNthCalledWith(1, 'TRUNCATE TABLE "Dummy"');
+                expect(prismaClient.$queryRawUnsafe).toHaveBeenNthCalledWith(2, 'TRUNCATE TABLE "Test"');
+            })
+
+            it('should only delete passed tables', async () => {
+                prismaClient.$queryRawUnsafe = jest.fn();
+
+                await prismaHelper.emptyDatabase(['Test']);
+
+                expect(prismaClient.$queryRawUnsafe).toHaveBeenCalledTimes(1);
+                expect(prismaClient.$queryRawUnsafe).toHaveBeenNthCalledWith(1, 'TRUNCATE TABLE "Test"');
             })
         });
     })
