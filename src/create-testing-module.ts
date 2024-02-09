@@ -1,5 +1,5 @@
 import {Test, TestingModule} from "@nestjs/testing";
-import {DynamicModule, INestApplication, ModuleMetadata, Type} from "@nestjs/common";
+import type {DynamicModule, INestApplication, ModuleMetadata, Type} from "@nestjs/common";
 import {ModuleOverrider} from "./interfaces/module-overrider";
 
 function isModuleMetadata(conf: ModuleMetadata | Type<any>): conf is ModuleMetadata {
